@@ -22,7 +22,7 @@ class BlogController @Inject()(
                               )(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   // CORS headers helper
-  private val corsHeaders = Seq(
+  private lazy val corsHeaders = Seq(
     "Access-Control-Allow-Origin" -> "*",
     "Access-Control-Allow-Methods" -> "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers" -> "Content-Type, Authorization"
@@ -44,25 +44,27 @@ class BlogController @Inject()(
     // Check authentication
     req.headers.get("Authorization") match {
       case Some(authHeader) if authHeader.startsWith("Bearer ") =>
-        val token = authHeader.substring(7)
+        val token = authHeader.substring(7) // extraction of token from auth header
         jwtUtil.getUserIdFromToken(token) match {
           case Some(userId) =>
             // User is authenticated, create blog
+            val authorName = jwtUtil.getAuthorFromToken(token).getOrElse("Unknown")
             try {
               val title = (req.body \ "title").as[String]
               val content = (req.body \ "content").as[String]
               val image = (req.body \ "image").asOpt[String].getOrElse("")
               val tags = (req.body \ "tags").asOpt[String].getOrElse("")
-              val author = (req.body \ "author").as[String]
               val likes = (req.body \ "likes").asOpt[Int].getOrElse(0)
 
               val blog = Blog(
                 id = UUID.randomUUID().toString,
                 title = title,
                 content = content,
-                author = author, // Use authenticated user ID
-                likes = likes,
                 image = Some(image),
+                authorId = userId.toString,
+                authorName = authorName,
+                likes = likes,
+                likedBy = Set.empty[String],
                 tags = Some(tags),
                 datePublished = Instant.now()
               )
@@ -103,16 +105,20 @@ class BlogController @Inject()(
     req.headers.get("Authorization") match {
       case Some(authHeader) if authHeader.startsWith("Bearer ") =>
         val token = authHeader.substring(7)
-        val authorName = jwtUtil.getAuthorFromToken(token)
         jwtUtil.getUserIdFromToken(token) match {
           case Some(userId) =>
             blogRepo.getById(id).flatMap {
               case Some(blog) =>
-                val updatedBlog = blog.copy(likes = blog.likes + 1)
-                blogRepo.update(id, updatedBlog).flatMap { _ =>
-                  // Create notification for blog author
-                  notificationService.notifyBlogLiked(id, userId.toString).map { _ =>
-                    Ok(Json.toJson(updatedBlog)).withHeaders(corsHeaders: _*)
+                if (blog.likedBy.contains(userId.toString)){
+                  Future.successful(BadRequest(Json.obj("error" -> "Already liked")).withHeaders(corsHeaders: _*))
+                }
+                else {
+                  val updatedBlog = blog.copy(likes = blog.likes + 1, likedBy = blog.likedBy + userId.toString)
+                  blogRepo.update(id, updatedBlog).flatMap { _ =>
+                    // Create notification for blog author
+                    notificationService.notifyBlogLiked(id, userId.toString).map { _ =>
+                      Ok(Json.toJson(updatedBlog)).withHeaders(corsHeaders: _*)
+                    }
                   }
                 }
               case None =>

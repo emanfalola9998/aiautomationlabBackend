@@ -35,23 +35,23 @@ class AuthService @Inject()(
   // Sign up with email/password
   def signUp(request: SignUpRequest): Future[Either[String, AuthResponse]] = {
     userRepository.emailExists(request.email).flatMap {
-      case true => Future.successful(Left("Email already exists"))
-      case false =>
+      case true => Future.successful(Left("Email already exists")) // Returns future, must return future as flatmap requires us to return same type as it operates on
+      case false => // returns future so must use flatMap
         val passwordHash = BCrypt.hashpw(request.password, BCrypt.gensalt())
         val now = Instant.now
         val user = User(
           id = UUID.randomUUID(),
           email = request.email.toLowerCase,
-          passwordHash = Some(passwordHash),
+          passwordHash = Some(passwordHash), // Some because local signup has password, None for OAuth signups (Google, Facebook, etc.)
           name = request.name,
-          provider = "local",
-          providerId = None,
+          provider = "local",  // "local", "google", "facebook"
+          providerId = None,  // OAuth provider's user ID ---- if applicable
           createdAt = now,
           updatedAt = now
         )
 
         userRepository.create(user).map { createdUser =>
-          val token = jwtUtil.generateToken(createdUser.id, createdUser.email)
+          val token = jwtUtil.generateToken(createdUser.id, createdUser.email, createdUser.name)
           Right(AuthResponse(token, User.UserResponse.fromUser(createdUser)))
         }
     }
@@ -63,7 +63,7 @@ class AuthService @Inject()(
       case Some(user) if user.provider == "local" =>
         user.passwordHash match {
           case Some(hash) if BCrypt.checkpw(request.password, hash) =>
-            val token = jwtUtil.generateToken(user.id, user.email)
+            val token = jwtUtil.generateToken(user.id, user.email, user.name)
             Right(AuthResponse(token, User.UserResponse.fromUser(user)))
           case _ =>
             Left("Invalid credentials")
@@ -104,7 +104,7 @@ class AuthService @Inject()(
         userRepository.findByProviderId("google", googleId).flatMap {
           case Some(user) =>
             // User exists, return token
-            val token = jwtUtil.generateToken(user.id, user.email)
+            val token = jwtUtil.generateToken(user.id, user.email, user.name)
             Future.successful(Right(AuthResponse(token, User.UserResponse.fromUser(user))))
 
           case None =>
@@ -128,7 +128,7 @@ class AuthService @Inject()(
                 )
 
                 userRepository.create(newUser).map { createdUser =>
-                  val token = jwtUtil.generateToken(createdUser.id, createdUser.email)
+                  val token = jwtUtil.generateToken(createdUser.id, createdUser.email, createdUser.name)
                   Right(AuthResponse(token, User.UserResponse.fromUser(createdUser)))
                 }
             }

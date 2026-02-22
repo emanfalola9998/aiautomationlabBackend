@@ -22,14 +22,14 @@ class NotificationService @Inject()(
 
     blogRepo.getById(blogId).flatMap {
       case Some(blog) =>
-        println(s"Blog found! Author: ${blog.author}")
+        println(s"Blog found! Author: ${blog.authorId}")
 
-        if (blog.author != likedByUserId) {  // Don't notify if user likes their own blog
-          println(s"Creating notification for blog author: ${blog.author}")
+        if (blog.authorId != likedByUserId) {  // Don't notify if user likes their own blog
+          println(s"Creating notification for blog author: ${blog.authorId}")
 
           val notification = Notification(
             id = 0,
-            userId = blog.author,  // ✅ CORRECT - Send notification TO the blog author
+            userId = blog.authorId,  // ✅ CORRECT - Send notification TO the blog author
             notificationType = "blog_like",
             message = "Someone liked your blog post",
             link = Some(s"/blog/$blogId"),
@@ -58,10 +58,10 @@ class NotificationService @Inject()(
   // Create notification when someone comments on a blog
   def notifyNewComment(blogId: String, commentedByUserId: String, commentId: Int): Future[Option[Notification]] = {
     blogRepo.getById(blogId).flatMap {
-      case Some(blog) if blog.author != commentedByUserId =>
+      case Some(blog) if blog.authorId != commentedByUserId =>
         val notification = Notification(
           id = 0,
-          userId = blog.author,  // ✅ Send TO the blog author
+          userId = blog.authorId,  // ✅ Send TO the blog author
           notificationType = "new_comment",
           message = "Someone commented on your blog post",
           link = Some(s"/blog/$blogId"),

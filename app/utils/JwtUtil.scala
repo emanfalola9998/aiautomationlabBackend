@@ -16,11 +16,12 @@ class JwtUtil @Inject()(config: Configuration) {
   private val algorithm = JwtAlgorithm.HS256
   private val expirationTime = config.get[Int]("jwt.expirationHours") // in hours
 
-  def generateToken(userId: UUID, email: String): String = {
+  def generateToken(userId: UUID, email: String, name: String): String = {
     val claim = JwtClaim(
       content = Json.obj(
         "userId" -> userId.toString,
-        "email" -> email
+        "email" -> email,
+        "author" -> name
       ).toString(),
       expiration = Some(Instant.now.plusSeconds(expirationTime * 3600).getEpochSecond),
       issuedAt = Some(Instant.now.getEpochSecond)
@@ -49,6 +50,7 @@ class JwtUtil @Inject()(config: Configuration) {
       case Success(claim) =>
         val json = Json.parse(claim.content)
         (json \ "author").asOpt[String]
+      case Failure(_) => None
     }
   }
 

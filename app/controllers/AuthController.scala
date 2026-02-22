@@ -14,7 +14,7 @@ class AuthController @Inject()(
                                 authService: AuthService
                               )(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  private val corsHeaders = Seq(
+  private lazy val corsHeaders = Seq(
     "Access-Control-Allow-Origin" -> "*",
     "Access-Control-Allow-Methods" -> "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers" -> "Content-Type, Authorization"
@@ -24,7 +24,7 @@ class AuthController @Inject()(
   def signUp(): Action[JsValue] = Action.async(parse.json) { request =>
     request.body.validate[SignUpRequest].fold(
       errors => {
-        val errorMessages = errors.map { case (path, validationErrors) =>
+        val errorMessages = errors.map { case (path, validationErrors) => // how the errors are generated in within .fold
           s"$path: ${validationErrors.map(_.message).mkString(", ")}"
         }.mkString("; ")
         Future.successful(
@@ -33,7 +33,7 @@ class AuthController @Inject()(
         )
       },
       signUpRequest => {
-        authService.signUp(signUpRequest).map {
+        authService.signUp(signUpRequest).map { // not flatMap as what is returned is a plain value not a wrapper
           case Right(response) =>
             Ok(Json.toJson(response))
               .withHeaders("Access-Control-Allow-Origin" -> "*")

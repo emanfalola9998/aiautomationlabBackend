@@ -23,52 +23,52 @@ object SeedDatabase {
   val blogData: Seq[Blog] = Seq(
     Blog("blg-001", "How AI Is Transforming Small Businesses",
       "Artificial intelligence is helping small companies automate repetitive tasks and make smarter decisions...",
-      Some("https://picsum.photos/800/400?1"), "Emmanuel", 34,
+      Some("https://picsum.photos/800/400?1"), "user-1", "Emmanuel", 34, Set.empty[String],
       Some("ai"), Instant.parse("2025-01-15T10:00:00Z")),
 
     Blog("blg-002", "Top 5 Tools for Automating Your Workflow",
       "Automation tools are becoming essential for entrepreneurs looking to scale without hiring large teams...",
-      Some("https://picsum.photos/800/400?2"), "Admin", 18,
+      Some("https://picsum.photos/800/400?2"), "user-2", "Admin", 18, Set.empty[String],
       Some("automation"), Instant.parse("2025-01-18T14:20:00Z")),
 
     Blog("blg-003", "Why Machine Learning Matters in 2025",
       "Machine learning continues to dominate the tech landscape as new models emerge...",
-      Some("https://picsum.photos/800/400?3"), "Emmanuel", 56,
+      Some("https://picsum.photos/800/400?3"), "user-1", "Emmanuel", 56, Set.empty[String],
       Some("future"), Instant.parse("2025-02-01T09:00:00Z")),
 
     Blog("blg-004", "The Rise of Low-Code AI Platforms",
       "Low-code AI is democratizing access to machine learning capabilities for everyday users...",
-      Some("https://picsum.photos/800/400?4"), "Sarah", 22,
+      Some("https://picsum.photos/800/400?4"), "user-3", "Sarah", 22, Set.empty[String],
       Some("ai"), Instant.parse("2025-02-05T13:30:00Z")),
 
     Blog("blg-005", "Automation Mistakes to Avoid in Your Startup",
       "Many startups rush into automation without establishing proper structure or processes...",
-      Some("https://picsum.photos/800/400?5"), "Emmanuel", 12,
+      Some("https://picsum.photos/800/400?5"), "user-1", "Emmanuel", 12, Set.empty[String],
       Some("automation"), Instant.parse("2025-02-10T17:10:00Z")),
 
     Blog("blg-006", "How Chatbots Are Changing Customer Service",
       "Chatbots powered by large language models are reshaping how companies handle customer interactions...",
-      Some("https://picsum.photos/800/400?6"), "Admin", 41,
+      Some("https://picsum.photos/800/400?6"), "user-2", "Admin", 41, Set.empty[String],
       Some("ai"), Instant.parse("2025-02-14T11:05:00Z")),
 
     Blog("blg-007", "The Benefits of AI-Powered Marketing Automation",
       "AI-driven marketing automation can significantly increase customer engagement...",
-      Some("https://picsum.photos/800/400?7"), "Sarah", 63,
+      Some("https://picsum.photos/800/400?7"), "user-3", "Sarah", 63, Set.empty[String],
       Some("automation"), Instant.parse("2025-03-01T08:45:00Z")),
 
     Blog("blg-008", "Improving Productivity with Task Automation",
       "Task automation allows businesses to streamline their operations and reduce time spent on manual tasks...",
-      Some("https://picsum.photos/800/400?8"), "Emmanuel", 27,
+      Some("https://picsum.photos/800/400?8"), "user-1", "Emmanuel", 27, Set.empty[String],
       Some("productivity"), Instant.parse("2025-03-10T15:00:00Z")),
 
     Blog("blg-009", "Understanding LLMs: A Beginner's Guide",
       "Large language models are powerful AI systems designed to understand and generate human-like text...",
-      Some("https://picsum.photos/800/400?9"), "Admin", 77,
+      Some("https://picsum.photos/800/400?9"), "user-2", "Admin", 77, Set.empty[String],
       Some("ai"), Instant.parse("2025-03-20T12:00:00Z")),
 
     Blog("blg-010", "AI Trends Dominating 2025",
       "From generative AI to autonomous agents, 2025 is shaping up to be a groundbreaking year...",
-      Some("https://picsum.photos/800/400?10"), "Sarah", 89,
+      Some("https://picsum.photos/800/400?10"), "user-3", "Sarah", 89, Set.empty[String],
       Some("future"), Instant.parse("2025-03-25T16:00:00Z"))
   )
 

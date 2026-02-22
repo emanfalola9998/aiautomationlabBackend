@@ -23,8 +23,10 @@ object DatabaseTest extends App {
     title = "Hello World",
     content = "This is a test blog",
     image = None,
-    author = "Admin",
+    authorId = "1",
+    authorName = "Admin",
     likes = 0,
+    likedBy = Set.empty[String],
     tags = None,
     datePublished = Instant.now()
   )
